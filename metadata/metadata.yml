@@ -1,0 +1,12 @@
+metadata_version: 1
+name: Delly germline complete analysis
+description: This capsule does structural variant (SV) prediction to can discover,
+  genotype and visualize deletions, tandem duplications, inversions and translocations
+  at single-nucleotide resolution in short-read massively parallel sequencing data.
+tags:
+- CNV
+- DNA
+- Genomics
+- Delly
+authors:
+- name: Sandra Hoffberg

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+# get latest version of Delly from github
+git clone --recursive https://github.com/dellytools/delly.git
+
+cd delly/
+
+# Build with OpenMP API
+make PARALLEL=1 src/delly
+
+
+git clone https://github.com/zappuf/aux_tools.git
+cd aux_tools/
+git checkout 3aea891c0a4a4eb17d1767b32c542b4cbed3f480
+chmod +x get_*
+ln -s $PWD/get_*.py /usr/local/bin
