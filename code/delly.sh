@@ -11,6 +11,15 @@ mkdir -p ../results/dellySV/3geno/
 mkdir -p ../results/dellySV/4merge/
 mkdir -p ../results/dellySV/5filter/
 
+mkdir -p ../results/dellyCNV/1CNVcall/
+mkdir -p ../results/dellyCNV/2merge/
+mkdir -p ../results/dellyCNV/3CNV/
+mkdir -p ../results/dellyCNV/4merge/
+mkdir -p ../results/dellyCNV/5filter/
+mkdir -p ../results/dellyCNV/6plot/
+
+
+
 # If coverage is low, samples should be processed together
 if [ "${coverage}" = "batch" ]; then
     # 1. In batches for low coverage genomes, use Split-read and Paired-end methods to call SVs
@@ -36,28 +45,26 @@ done
 bcftools merge -m id -O b -o ../results/dellySV/4merge/merged.bcf $(find -L ../results/dellySV/3geno -name "*.vcf") --threads ${num_threads} --force-samples
 bcftools index -c --threads ${num_threads} ../results/dellySV/4merge/merged.bcf
 
-# 5. Apply the germline SV filter which requires at least 20 unrelated samples
+
 if [ ${num_attached_bams} -gt 20 ]; then
+# 5. Apply the germline SV filter which requires at least 20 unrelated samples
     /delly/src/delly filter -f germline -o ../results/dellySV/5filter/germline.bcf ../results/dellySV/4merge/merged.bcf
+
+
+    # 1. Call CNVs for each sample and refine breakpoints using delly SV calls
+    for bam in ${attached_bams}; do
+        /delly/src/delly cnv -g ${reference} -m ${CNVmap} -l ../results/dellySV/5filter/germline.bcf -o ../results/dellyCNV/1CNVcall/$(basename ${bam} .bam)_dellyCNV.bcf ${bam}
+    done
+
+else
+
+    # 1. Alternately, call CNVs but do not refine breakpoints using delly SV calls because there are not enough samples.
+    for bam in ${attached_bams}; do
+        /delly/src/delly cnv -g ${reference} -m ${CNVmap} -o ../results/dellyCNV/1CNVcall/$(basename ${bam} .bam)_dellyCNV.bcf ${bam}
+    done
+
 fi
 
-
-
-
-## Call CNVs 
-
-mkdir -p ../results/dellyCNV/1CNVcall/
-mkdir -p ../results/dellyCNV/2merge/
-mkdir -p ../results/dellyCNV/3CNV/
-mkdir -p ../results/dellyCNV/4merge/
-mkdir -p ../results/dellyCNV/5filter/
-mkdir -p ../results/dellyCNV/6plot/
-
-
-# 1. Call CNVs for each sample and refine breakpoints using delly SV calls
-for bam in ${attached_bams}; do
-    /delly/src/delly cnv -g ${reference} -m ${CNVmap} -l ../results/dellySV/5filter/germline.bcf -o ../results/dellyCNV/1CNVcall/$(basename ${bam} .bam)_dellyCNV.bcf ${bam}
-done
 
 # 2. Merge CNVs into a unified site list
 /delly/src/delly merge -e -p -o ../results/dellyCNV/2merge/dellyCNV.vcf ../results/dellyCNV/1CNVcall/*.bcf
