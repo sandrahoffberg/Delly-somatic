@@ -1,4 +1,4 @@
-# hash:sha256:42308106c4609057e2c67cc59e5d78853993e79054804bb79fc627acf95d09a4
+# hash:sha256:e5697a07d1358b759db59b9c8be71b602bb2558908fa8ea596c4186288590677
 FROM registry.apps.codeocean.com/codeocean/jupyterlab:3.4.4-miniconda4.12.0-python3.9-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -14,7 +14,7 @@ RUN apt-get update \
         awscli=1.18.69-1ubuntu0.20.04.1 \
         build-essential=12.8ubuntu1.1 \
         cmake=3.16.3-1ubuntu1.20.04.1 \
-        git=1:2.25.1-1ubuntu3.8 \
+        git=1:2.25.1-1ubuntu3.10 \
         hdf5-tools=1.10.4+repack-11ubuntu1 \
         libboost-date-time-dev=1.71.0.0ubuntu2 \
         libboost-filesystem-dev=1.71.0.0ubuntu2 \
@@ -38,8 +38,8 @@ RUN conda install -y \
         conda==4.12.0 \
     && conda clean -ya
 RUN conda install -y --channel=conda-forge --channel=bioconda \
-        bcftools==1.16 \
-        htslib==1.16 \
+        bcftools==1.13 \
+        htslib==1.13 \
         r-essentials==4.1 \
         r-ggplot2==3.4.0 \
         r-gtable==0.3.1 \

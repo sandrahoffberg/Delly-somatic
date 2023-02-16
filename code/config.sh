@@ -38,41 +38,55 @@ fi
 
 
 
-if [ "${3}" = "batch" ]; then
-    coverage="batch"
+if [ -z ${3} ]; then
+  samplesheet=$(find -L ../data/ -name "samplesheet*.tsv")
 else
-    coverage="individually"
+  samplesheet=${3}
 fi
+# make the path absolute
+samplesheet=$PWD/${samplesheet}
+
+
+if [ -z ${4} ]; then
+  comparesheet=$(find -L ../data/ -name "comparesheet*.csv")
+else
+  comparesheet=${4}
+fi
+# make the path absolute
+comparesheet=$PWD/${comparesheet}
+
+
+
 
 
 # If a reference file has not been specified in the app panel, find it
-if [ -z ${4} ]; then
+if [ -z ${5} ]; then
     reference=$(find -L ../data/ -name "*.fa")
     if [ "${reference}" = "" ]; then
         echo "Check your input data: there is no reference .fa file."
     fi
 else
-    reference=${4}
+    reference=${5}
 fi
 # make the path absolute
 reference=$PWD/${reference}
 
 
 # If a bed file of regions to exclude has not been specified in the app panel, find it
-if [ -z ${5} ]; then
+if [ -z ${6} ]; then
   SVbed=$(find -L ../data/ -name "*.bed")
 else
-  SVbed=${5}
+  SVbed=${6}
 fi
 # make the path absolute
 SVbed=$PWD/${SVbed}
 
 
 # If an annotation file has not been specified in the app panel, find it
-if [ -z ${6} ]; then
+if [ -z ${7} ]; then
     CNVmap=$(find -L ../data/ -name "*blacklist.gz")
 else
-    CNVmap=${6}
+    CNVmap=${7}
 fi
 # make the path absolute
 CNVmap=$PWD/${CNVmap}
@@ -82,10 +96,10 @@ CNVmap=$PWD/${CNVmap}
 #Delly primarily parallelizes on the sample level. Hence, OMP_NUM_THREADS should be always smaller or equal to the number of input samples.
 cores=$(get_cpu_count.py)
 
-if [ -z ${7} ]; then
+if [ -z ${8} ]; then
     num_threads=$((cores * 2))
 else
-    num_threads=${7}
+    num_threads=${8}
 fi
 
 num_attached_bams=$(find -L ${data_dir} -name "*.bam" | wc -l)
