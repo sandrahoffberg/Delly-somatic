@@ -155,7 +155,7 @@ for line in $(cat ${comparesheet}); do
     control=$(echo $line | awk -F, '{print $1}')
     case=$(echo $line | awk -F, '{print $2}')
 
-    /delly/src/delly classify -p -f somatic -o ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf -s ${samplesheet} ../results/dellyCNV/3merge/${case}_${control}.bcf
+    /delly/src/delly classify -f somatic -o ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf -s ${samplesheet} ../results/dellyCNV/3merge/${case}_${control}.bcf
 done
 
 
