@@ -9,19 +9,20 @@ Documentation: [Github](https://github.com/dellytools/delly)
 Delly includes many tunable parameters (e.g., for discovering variants with minimum quality, within specific window sizes, etc).  This capsule leaves most parameters as default.
 
 Input: 
-- BAM file that has been trimmed, aligned to reference, sorted, duplicate marked, read groups adjusted if necessary, indexed.  This capsule downloads data from an S3 bucket if a URL is provided in the App Panel. If no URL is provided, it will search for bam files in the ```/data``` folder.  It cannot use sample data from both locations in the same run. 
+- BAM file that has been trimmed, aligned to reference, sorted, duplicate marked, read groups adjusted if necessary, indexed.  This capsule downloads data from an S3 bucket if a URL is provided in the App Panel. If no URL is provided, it will search for bam files in the ```/data``` folder.  It can use sample data from both locations in the same run. 
 - Genome in fasta format (```.fa``` ending) with an index created in Samtools that ends in ```.fa.fai```  in the ```/data``` folder is required to identify split-reads
 - A samplesheet, a tab-delimited (```.tsv```) sample description file where the first column is the sample ID (as in the VCF/BCF file) and the second column is either "tumor" or "control" in the ```/data``` folder.
 - A comparesheet, a comma-delimited (```.csv```) file that has two samples on each line, the first is the control, the second is the matched tumor in the ```/data``` folder.  Sample names may appear on more than 1 line in the case of multiple cases matched to the same control or multiple controls matched to the same case. 
 - Optional: mappability map, [downloaded here](https://gear.embl.de/data/delly/).  A ```fasta``` format file with repetitive regions of the genome hardmasked, and both an ```.fai``` and ```.gzi``` index in the ```/data``` folder. 
 - Optional: a BED file of repetitive regions to exclude (e.g., telomeres and centromeres) located in the ```/data``` folder.  The one used here was downloaded from [SpeedSeq Github page](https://github.com/hall-lab/speedseq/blob/master/annotations/exclude.cnvnator_100bp.GRCh38.20170403.bed) and linked to from smoove Github page.
 - Parameters provided in the App Panel
+    - Path to samplesheet
     - The URL of the S3 bucket with ```bam``` files, if they are not in the ```/data``` folder of this capsule. 
     - The location to downolad the ```bam``` files from S3 [Default: /results/data]
-    - Whether to process samples individually or in batch for SV calling. Processing individually is better for high coverage samples, while processing in batch provides more power to detect variants for low coverage samples.  
+    - Path to comparesheet  
     - Path to the genome reference
     - Path to the bed file of regions to exclude
-    - Path to the genome annotation file 
+    - Path to the blacklisted fasta file
     - Number of threads to run on. Delly primarily parallelizes on the sample level. Hence, OMP_NUM_THREADS should be always smaller or equal to the number of input samples. [Default: 1]
 
 

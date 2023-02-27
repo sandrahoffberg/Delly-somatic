@@ -10,8 +10,10 @@ cd delly/
 make PARALLEL=1 src/delly
 
 
-git clone https://github.com/zappuf/aux_tools.git
-cd aux_tools/
-git checkout 3aea891c0a4a4eb17d1767b32c542b4cbed3f480
-chmod +x get_*
-ln -s $PWD/get_*.py /usr/local/bin
+# install code ocean aux tools
+mkdir -p /opt
+cd /opt
+git clone https://github.com/codeocean/co_aux_tools.git
+cd co_aux_tools/
+chmod +x {g,s}et_*
+ln -s $PWD/{g,s}et_*.py /usr/local/bin

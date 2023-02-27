@@ -3,39 +3,6 @@ set -ex
 
 source ./config.sh
 
-# Organize the controls and cases into separate folders
-control_bams=$(while IFS= read -r line; do
-    if [[ ${line} =~ "control" ]]; then
-        control_name=$(echo ${line} | cut -d' ' -f1)
-        echo $(find -L /data /results -name ${control_name}_RG.bam)
-    fi
-done < ${samplesheet})
-echo ${control_bams}
-
-mkdir -p ../results/data/controls
-mv $(dirname ${control_bams}) ${data_dir}/controls
-
-
-
-# find the tumors
-tumor_bams=$(while IFS= read -r line; do
-    if [[ ${line} =~ "tumor" ]]; then
-        tumor_name=$(echo ${line} | cut -d' ' -f1)
-        echo $(find -L /data /results -name ${tumor_name}_RG.bam)
-
-    fi
-done < ${samplesheet})
-echo ${tumor_bams}
-
-mkdir -p ../results/data/tumors
-mv $(dirname ${tumor_bams}) ${data_dir}/tumors
-
-
-
-attached_bams=$(find -L ${data_dir} -name "*.bam")
-
-
-###########################################
 
 mkdir -p ../results/dellySV/1calls
 mkdir -p ../results/dellySV/2prefilter
@@ -80,7 +47,7 @@ done
 control_bams=$(while IFS= read -r line; do
     if [[ ${line} =~ "control" ]]; then
         control_name=$(echo ${line} | cut -d' ' -f1)
-        echo $(find -L /data /results/data/controls -name ${control_name}_RG.bam)
+        echo $(find -L /data /results/data/controls -name ${control_name}*.bam)
     fi
 done < ${samplesheet})
 echo $controls
@@ -98,7 +65,7 @@ for tumorsamp in ${tumors}; do
     #tumorsamp=$(basename ${file} .bam)
     mkdir -p ../results/dellySV/3SV_filter/${tumorsamp}
     tumor_bcf=$(find -L ../results/ -name "sample_pair_${tumorsamp}_*prefilter.bcf")
-    /delly/src/delly call -g ${reference} -v ${tumor_bcf} -o ../results/dellySV/3SV_filter/${tumorsamp}/${tumorsamp}_geno.bcf -x ${SVbed} $(find -L /data /results -name ${tumorsamp}_RG.bam) ${control_bams}
+    /delly/src/delly call -g ${reference} -v ${tumor_bcf} -o ../results/dellySV/3SV_filter/${tumorsamp}/${tumorsamp}_geno.bcf -x ${SVbed} $(find -L /data /results -name ${tumorsamp}*.bam) ${control_bams} #RG
 
     # 4. Post-filter for somatic SVs using all control samples.
     /delly/src/delly filter -f somatic -o ../results/dellySV/3SV_filter/${tumorsamp}/${tumorsamp}_somatic.bcf -s ${samplesheet} ../results/dellySV/3SV_filter/${tumorsamp}/${tumorsamp}_geno.bcf
@@ -112,7 +79,7 @@ done
 
 # 1. Somatic copy-number alterations detection (-u is required). Depending on the coverage, tumor purity and heterogeneity you can adapt parameters -z, -t and -x which control the sensitivity of SCNA detection.
 for tumorsamp in ${tumors}; do
-    /delly/src/delly cnv -u -o ../results/dellyCNV/1tumor/tumor_${tumorsamp}.bcf -c ../results/dellyCNV/1tumor/tumor_${tumorsamp}_out.cov.gz -g ${reference} -m ${CNVmap} $(find -L ../data ../results -name ${tumorsamp}_RG.bam)
+    /delly/src/delly cnv -u -o ../results/dellyCNV/1tumor/tumor_${tumorsamp}.bcf -c ../results/dellyCNV/1tumor/tumor_${tumorsamp}_out.cov.gz -g ${reference} -m ${CNVmap} $(find -L ../data ../results -name ${tumorsamp}*.bam) #RG
 done 
 
 
@@ -169,7 +136,7 @@ for line in $(cat ${comparesheet}); do
     control=$(echo $line | awk -F, '{print $1}')
     case=$(echo $line | awk -F, '{print $2}')
 
-    bcftools query -f "%CHROM\t%POS\t%INFO/END\t%ID\t[%RDCN]\n" -o ../results/dellyCNV/5plot/${case}_segmentation.bed ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf #-s ${case} 
+    bcftools query -s ${case} -f "%CHROM\t%POS\t%INFO/END\t%ID\t[%RDCN]\n" -o ../results/dellyCNV/5plot/${case}_segmentation.bed ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf #-s ${case} 
     mkdir -p ../results/dellyCNV/5plot/${case}_plots_seg
     cd ../results/dellyCNV/5plot/${case}_plots_seg
     R CMD BATCH "--args ../../1tumor/tumor_${case}_out.cov.gz ../${case}_segmentation.bed" /delly/R/rd.R 
