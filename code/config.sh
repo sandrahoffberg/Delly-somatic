@@ -170,14 +170,20 @@ fi
 CNVmap=$PWD/${CNVmap}
 
 
+if [ -z ${8} ]; then
+    svtype=ALL
+else
+    svtype="${8}"
+fi
+
 
 #Delly primarily parallelizes on the sample level. Hence, OMP_NUM_THREADS should be always smaller or equal to the number of input samples.
 cores=$(get_cpu_count.py)
 
-if [ -z ${8} ]; then
+if [ -z ${9} ]; then
     num_threads=$((cores * 2))
 else
-    num_threads=${8}
+    num_threads=${9}
 fi
 
 num_attached_bams=$(find -L ${data_dir} -name "*.bam" | wc -l)
@@ -191,3 +197,66 @@ fi
 min=$(( ${num_attached_bams} < ${num_threads} ? ${num_attached_bams} : ${num_threads} ))
 
 export OMP_NUM_THREADS=${min}
+
+
+
+
+## Auxilliary Parameters
+
+if [ -z ${10} ]; then
+    map_quality=1
+else
+    map_quality=${10}
+fi
+
+
+if [ -z ${11} ]; then 
+    qual_translocation=20
+else
+    qual_translocation=${11}
+fi
+
+
+if [ -z ${12} ]; then
+    min_clip=25
+else
+    min_clip=${12}
+fi
+
+
+if [ -z ${13} ]; then
+    min_clique_size=2
+else
+    min_clique_size=${13}
+fi
+
+
+if [ -z ${14} ]; then
+    min_split_read_dist=25
+else
+    min_split_read_dist=${14}
+fi
+
+
+if [ -z ${15} ]; then
+    max_split_read_dist=40
+else
+    max_split_read_dist=${15}
+fi
+
+
+if [ -z ${16} ]; then
+    genotype_quality=5
+else
+    genotype_quality=${16}
+fi
+
+
+if [ -d ${17} ]; then
+    SV_reads_output=
+else
+    SV_reads_output=-d ${17}
+fi
+
+
+
