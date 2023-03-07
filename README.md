@@ -2,23 +2,21 @@
 
 <hr>
 
-# Somatic structural variant & CNV calling in [Delly](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3436805/)
+# Somatic structural variant & CNV calling in Delly
 
 Delly is an integrated structural variant (SV) prediction method that can discover, genotype and visualize deletions, tandem duplications, inversions and translocations at single-nucleotide resolution in short-read and long-read massively parallel sequencing data. It uses paired-ends, split-reads and read-depth to sensitively and accurately delineate genomic rearrangements throughout the genome.  
 
 This capsule does Structural Variant calling based on paired-end and split-reads and Copy Number Variation calling based on read depth in (Illumina) short reads from case (e.g., cancer) and matched control samples.
 
-Documentation: [Github](https://github.com/dellytools/delly)
-
-Delly includes many tunable parameters (e.g., for discovering variants with minimum quality, within specific window sizes, etc).  This capsule leaves most parameters as default.
+For more information, see the [Delly Github](https://github.com/dellytools/delly) page. 
 
 ## Input 
-- BAM file that has been trimmed, aligned to reference, sorted, duplicate marked, read groups adjusted if necessary, indexed.  This capsule downloads data from an S3 bucket if a URL is provided in the App Panel. If no URL is provided, it will search for bam files in the ```/data``` folder.  It can use sample data from both locations in the same run. 
-- Genome in fasta format (```.fa``` ending) with an index created in Samtools that ends in ```.fa.fai```  in the ```/data``` folder is required to identify split-reads
-- A samplesheet, a tab-delimited (```.tsv```) sample description file where the first column is the sample ID (as in the VCF/BCF file) and the second column is either "tumor" or "control" in the ```/data``` folder.
-- A comparesheet, a comma-delimited (```.csv```) file that has two samples on each line, the first is the control, the second is the matched tumor in the ```/data``` folder.  Sample names may appear on more than 1 line in the case of multiple cases matched to the same control or multiple controls matched to the same case. 
-- Optional: mappability map, [downloaded here](https://gear.embl.de/data/delly/).  A ```fasta``` format file with repetitive regions of the genome hardmasked, and both an ```.fai``` and ```.gzi``` index in the ```/data``` folder. 
-- Optional: a BED file of repetitive regions to exclude (e.g., telomeres and centromeres) located in the ```/data``` folder.  The one used here was downloaded from [SpeedSeq Github page](https://github.com/hall-lab/speedseq/blob/master/annotations/exclude.cnvnator_100bp.GRCh38.20170403.bed) and linked to from smoove Github page.
+- BAM file that has been trimmed, aligned to reference, sorted, duplicate marked, read groups adjusted if necessary, indexed.  This capsule downloads data from an S3 bucket if a URL is provided in the App Panel. If no URL is provided, it will search for bam files in the **/data** directory.  It can use sample data from both locations in the same run. 
+- In the **/data** directory, a genome in fasta format (```.fa``` ending) with an index created in Samtools that ends in ```.fa.fai```   is required to identify split-reads
+- In the **/data** directory, a samplesheet, a tab-delimited (```.tsv```) sample description file where the first column is the sample ID (as in the VCF/BCF file) and the second column is either "tumor" or "control".
+- In the **/data** directory, a comparesheet, a comma-delimited (```.csv```) file that has two samples on each line, the first is the control, the second is the matched tumor.  Sample names may appear on more than 1 line in the case of multiple cases matched to the same control or multiple controls matched to the same case. 
+- Optional: In the **/data** directory, a mappability map, [downloaded here](https://gear.embl.de/data/delly/).  This is a ```fasta``` format file with repetitive regions of the genome hardmasked, and both an ```.fai``` and ```.gzi``` index. 
+- Optional: In the **/data** directory, a BED file of repetitive regions to exclude (e.g., telomeres and centromeres).  The one used here was downloaded from [SpeedSeq Github page](https://github.com/hall-lab/speedseq/blob/master/annotations/exclude.cnvnator_100bp.GRCh38.20170403.bed) and linked to from smoove Github page.
 
 
 
