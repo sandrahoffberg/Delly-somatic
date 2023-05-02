@@ -1,4 +1,4 @@
-# hash:sha256:7677fb8ac79ee42bd5cd5576784f9c7b872845d197153da00393b751243164ad
+# hash:sha256:e9e12ce1a55bc0e4fe5865fe5c1f61c7ae614301cf2f15dc9df1cfcb633dd55f
 FROM registry.apps.codeocean.com/codeocean/mambaforge3:22.11.1-4-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -14,6 +14,7 @@ RUN apt-get update \
         awscli=1.22.34-1 \
         build-essential=12.9ubuntu3 \
         cmake=3.22.1-1ubuntu1.22.04.1 \
+        dos2unix=7.4.2-2 \
         git=1:2.34.1-1ubuntu1.9 \
         hdf5-tools=1.10.7+repack-4ubuntu2 \
         libboost-date-time-dev=1.74.0.3ubuntu7 \

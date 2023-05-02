@@ -30,6 +30,9 @@ fi
 # make the path absolute
 samplesheet=$PWD/${samplesheet}
 
+# ensure correct line endings
+dos2unix ${samplesheet}
+
 
 # URL of the s3 bucket with bams for analysis
 if [ -z ${2} ]; then
