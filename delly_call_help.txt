@@ -1,0 +1,29 @@
+
+Usage: delly call [OPTIONS] -g <ref.fa> <sample1.sort.bam> <sample2.sort.bam> ...
+
+Generic options:
+  -? [ --help ]                       show help message
+  -t [ --svtype ] arg (=ALL)          SV type to compute [DEL, INS, DUP, INV, 
+                                      BND, ALL]
+  -g [ --genome ] arg                 genome fasta file
+  -x [ --exclude ] arg                file with regions to exclude
+  -o [ --outfile ] arg                BCF output file
+
+Discovery options:
+  -q [ --map-qual ] arg (=1)          min. paired-end (PE) mapping quality
+  -r [ --qual-tra ] arg (=20)         min. PE quality for translocation
+  -s [ --mad-cutoff ] arg (=9)        insert size cutoff, median+s*MAD 
+                                      (deletions only)
+  -c [ --minclip ] arg (=25)          min. clipping length
+  -z [ --min-clique-size ] arg (=2)   min. PE/SR clique size
+  -m [ --minrefsep ] arg (=25)        min. reference separation
+  -n [ --maxreadsep ] arg (=40)       max. read separation
+
+Genotyping options:
+  -v [ --vcffile ] arg                input VCF/BCF file for genotyping
+  -u [ --geno-qual ] arg (=5)         min. mapping quality for genotyping
+  -d [ --dump ] arg                   gzipped output file for SV-reads 
+                                      (optional)
+  -a [ --max-geno-count ] arg (=250)  max. number of reads aligned for SR 
+                                      genotyping
+

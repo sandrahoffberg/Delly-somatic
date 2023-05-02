@@ -1,0 +1,31 @@
+
+Usage: delly filter [OPTIONS] <input.bcf>
+
+Generic options:
+  -? [ --help ]                         show help message
+  -f [ --filter ] arg (=somatic)        Filter mode (somatic, germline)
+  -o [ --outfile ] arg                  Filtered SV BCF output file
+  -y [ --quality ] arg (=300)           min. SV site quality
+  -a [ --altaf ] arg (=0.0299999993)    min. fractional ALT support
+  -m [ --minsize ] arg (=0)             min. SV size
+  -n [ --maxsize ] arg (=500000000)     max. SV size
+  -r [ --ratiogeno ] arg (=0.75)        min. fraction of genotyped samples
+  -p [ --pass ]                         Filter sites for PASS
+  -t [ --tag ]                          Tag filtered sites in the FILTER column
+                                        instead of removing them
+
+Somatic options:
+  -s [ --samples ] arg                  Two-column sample file listing sample 
+                                        name and tumor or control
+  -v [ --coverage ] arg (=10)           min. coverage in tumor
+  -c [ --controlcontamination ] arg (=0)
+                                        max. fractional ALT support in control
+
+Germline options:
+  -q [ --gq ] arg (=15)                 min. median GQ for carriers and 
+                                        non-carriers
+  -e [ --rddel ] arg (=0.800000012)     max. read-depth ratio of carrier vs. 
+                                        non-carrier for a deletion
+  -u [ --rddup ] arg (=1.20000005)      min. read-depth ratio of carrier vs. 
+                                        non-carrier for a duplication
+
