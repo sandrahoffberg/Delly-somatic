@@ -28,8 +28,6 @@ for line in $(cat ${comparesheet}); do
     /delly/src/delly call -g ${reference} -x ${SVbed} ${min_read_map_quality_discovery} ${min_split_read_dist} ${max_split_read_dist} -o ../results/dellySV/1calls/sample_pair_${case}_${control}.bcf ${case_file} ${control_file}   
 done
 
-
-
 # 2. Somatic prefiltering
 for pairedbcfs in ../results/dellySV/1calls/sample_pair*.bcf
 do
@@ -37,19 +35,17 @@ do
     /delly/src/delly filter -f somatic ${min_SV_quality} ${min_SV_size} ${max_SV_size} ${min_genotyped_samples} ${pass_only} ${min_coverage} -o ../results/dellySV/2prefilter/${case}_prefilter.bcf -s ${samplesheet} ${pairedbcfs}
 done 
 
-
-
 # 3. Genotype pre-filtered somatic sites across a larger panel of control samples to efficiently filter false postives and germline SVs. (1 tumor and lots of controls)
 
 # Re-specify these variables
 control_bams=$(while IFS= read -r line; do
     if [[ ${line} =~ "control" ]]; then
         control_name=$(echo ${line} | cut -d' ' -f1)
-        echo $(find -L ../data ../results/data/controls -name ${control_name}*.bam)
+        echo $(find -L ../data ${data_dir} -name ${control_name}*.bam)
     fi
 done < ${samplesheet})
-echo $controls
-
+echo "controls"
+echo ${controls}
 
 # find the tumors
 tumors=$(while IFS= read -r line; do
@@ -57,17 +53,17 @@ tumors=$(while IFS= read -r line; do
         echo ${line} | cut -d' ' -f1
     fi
 done < ${samplesheet})
+echo "tumors" 
 echo ${tumors}
 
 
 for tumorsamp in ${tumors}; do
-    #tumorsamp=$(basename ${file} .bam)
     mkdir -p ../results/dellySV/3genotypes/${tumorsamp}
     tumor_bcf=$(find -L ../results/ -name "sample_pair_${tumorsamp}_*prefilter.bcf")
     /delly/src/delly call -g ${reference} -v ${tumor_bcf} -x ${SVbed} ${min_read_map_quality_discovery} ${min_split_read_dist} ${max_split_read_dist} -o ../results/dellySV/3genotypes/${tumorsamp}/${tumorsamp}_geno.bcf $(find -L ../data ../results -name ${tumorsamp}*.bam) ${control_bams} #RG
 
     # 4. Post-filter for somatic SVs using all control samples.
-        mkdir -p ../results/dellySV/4filter/${tumorsamp}
+    mkdir -p ../results/dellySV/4filter/${tumorsamp}
     /delly/src/delly filter -f somatic ${min_SV_quality} ${min_SV_size} ${max_SV_size} ${min_genotyped_samples} ${pass_only} ${min_coverage} -o ../results/dellySV/4filter/${tumorsamp}/${tumorsamp}_somatic.bcf -s ${samplesheet} ../results/dellySV/3genotypes/${tumorsamp}/${tumorsamp}_geno.bcf
 done
 

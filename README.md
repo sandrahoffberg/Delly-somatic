@@ -25,7 +25,7 @@ Delly includes many tunable parameters (e.g., for discovering variants with mini
 ### Main Parameters
 
 Path to samplesheet
-- A tab-delimited (```.tsv```) sample description file where the first column is the sample ID (as in the VCF/BCF file) and the second column is either "tumor" or "control". [Default: None]
+- A tab-delimited (```.tsv```) sample description file where the first column is the sample ID (as in the VCF/BCF file) and the second column is either "tumor" or "control". [Default: samplesheet.tsv in /data directory]
 
 The URL of the S3 bucket with ```bams```
 - If provided, will pull .bam files from this S3 location. [Default: s3://codeocean-public-data/example_datasets/chr11_tumor_bams/]
@@ -35,19 +35,19 @@ S3 Directory
 
 Path to comparesheet
 - A comma-delimited (.csv) file that has two samples on each line, the first is the control, the second is the matched tumor. 
-Sample names may appear on more than 1 line in the case of multiple cases matched to the same control or multiple controls matched to the same case. (Default: None)
+Sample names may appear on more than 1 line in the case of multiple cases matched to the same control or multiple controls matched to the same case. [Default: comparesheet.csv in /data]
 
 Path to the genome reference
-- Path to fasta reference (Default: ../data/Reference)
+- Path to fasta reference [Default: ../data/Reference]
 
 Path to bed exclude file
-- Bed file containing regions to ignore (Default: None)
+- Bed file containing regions to ignore [Default: None]
 
 Path to blacklisted fasta file
-- Fasta sequences to ignore. (Default: None)
+- Fasta sequences to ignore. [Default: None]
 
 Type of structural variation
-- The type of Structural Variants to detect: DELetions, INSertions, DUPlications, INVersions, BreakeND, or ALL types. 
+- The type of Structural Variants to detect: DELetions, INSertions, DUPlications, INVersions, BreakeND, or ALL types. [Default ALL]
 
 Threads
 - Number of threads to run on. Delly primarily parallelizes on the sample level. Hence, OMP_NUM_THREADS should be always smaller or equal to the number of input samples. [Default: max available]

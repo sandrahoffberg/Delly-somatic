@@ -45,7 +45,7 @@ else
     
     # location to download the bams
     if [ -z ${3} ]; then
-        data_dir=../results/data
+        data_dir=../scratch/data
     else
         data_dir=${3}
     fi
@@ -54,40 +54,29 @@ else
     echo "Downloading data from the S3 bucket at the provided URL."
     aws s3 sync --no-sign-request --only-show-errors ${s3_url} ${data_dir}
 
-
     # Organize the controls and cases into separate folders
     control_bams=$(while IFS= read -r line; do
     if [[ ${line} =~ "control" ]]; then
         control_name=$(echo ${line} | cut -d' ' -f1)
-        echo $(find -L ../data ../results -name ${control_name}*.bam)
+        echo $(find -L ../data ${data_dir} -name ${control_name}*.bam)
     fi
     done < ${samplesheet})
     echo ${control_bams}
 
-    mkdir -p ../results/data/controls
-    mv $(dirname ${control_bams}) ../results/data/controls
-
+    mkdir -p ../scratch/data/controls
+    mv $(dirname ${control_bams}) ../scratch/data/controls
 
     # find the tumors
     tumor_bams=$(while IFS= read -r line; do
         if [[ ${line} =~ "tumor" ]]; then
             tumor_name=$(echo ${line} | cut -d' ' -f1)
-            echo $(find -L ../data ../results -name ${tumor_name}*.bam)
+            echo $(find -L ../data ../scratch -name ${tumor_name}*.bam)
         fi
     done < ${samplesheet})
     echo ${tumor_bams}
 
-    mkdir -p ../results/data/cases
-    mv $(dirname ${tumor_bams}) ../results/data/cases
-fi
-
-
-if [ -z $AWS_BATCH_JOB_ID ]; then
-    directory_with_cases=../results/data/cases/*
-    directory_with_controls=../results/data/controls/*
-else
-    directory_with_cases=${data_dir}/cases/*
-    directory_with_controls=${data_dir}/controls/*
+    mkdir -p ../scratch/data/cases
+    mv $(dirname ${tumor_bams}) ../scratch/data/cases
 fi
 
 
