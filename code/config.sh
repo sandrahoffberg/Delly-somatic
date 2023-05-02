@@ -26,12 +26,11 @@ elif [ ${number_samplesheet} -gt 1 ]; then
     echo "Check your input data: there are multiple samplesheets."
     exit 1
 fi
-
-# make the path absolute
-samplesheet=$PWD/${samplesheet}
-
+# fix line endings
+cp ${samplesheet} /scratch/samplesheet.tsv
 # ensure correct line endings
-dos2unix ${samplesheet}
+dos2unix /scratch/samplesheet.tsv
+samplesheet=/scratch/samplesheet.tsv
 
 
 # URL of the s3 bucket with bams for analysis
@@ -75,10 +74,11 @@ elif [ ${number_comparesheet} -gt 1 ]; then
     exit 1
 fi
 
-# make the path absolute
-comparesheet=$PWD/${comparesheet}
-
-dos2unix ${comparesheet}
+# fix line endings
+cp ${comparesheet} /scratch/comparesheet.csv
+# ensure correct line endings
+dos2unix /scratch/comparesheet.csv
+comparesheet=/scratch/comparesheet.csv
 
 # If a reference file has not been specified in the app panel, find it
 if [ -z ${5} ]; then
