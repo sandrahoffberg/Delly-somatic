@@ -1,8 +1,9 @@
 metadata_version: 1
 name: Delly somatic complete analysis
-description: This capsule does structural variant (SV) prediction to can discover,
-  genotype and visualize deletions, tandem duplications, inversions and translocations
-  at single-nucleotide resolution in short-read massively parallel sequencing data.
+description: |-
+  This capsule does structural variant (SV) prediction to can discover, genotype and visualize deletions, tandem duplications, inversions and translocations at single-nucleotide resolution in short-read massively parallel sequencing data.
+
+  https://github.com/dellytools/delly
 tags:
 - CNV
 - DNA
