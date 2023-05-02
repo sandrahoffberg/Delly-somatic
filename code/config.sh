@@ -78,6 +78,8 @@ fi
 # make the path absolute
 comparesheet=$PWD/${comparesheet}
 
+dos2unix ${comparesheet}
+
 # If a reference file has not been specified in the app panel, find it
 if [ -z ${5} ]; then
     reference=$(find -L ../data/ -name "*.fa")
