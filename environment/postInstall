@@ -15,5 +15,6 @@ mkdir -p /opt
 cd /opt
 git clone https://github.com/codeocean/co_aux_tools.git
 cd co_aux_tools/
+git checkout 920f3f3a7ffa1cfd25e31679c109853fb90e75e5
 chmod +x {g,s}et_*
 ln -s $PWD/{g,s}et_*.py /usr/local/bin

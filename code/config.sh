@@ -110,10 +110,6 @@ fi
 # make the path absolute
 comparesheet=$PWD/${comparesheet}
 
-
-
-
-
 # If a reference file has not been specified in the app panel, find it
 if [ -z ${5} ]; then
     reference=$(find -L ../data/ -name "*.fa")
@@ -178,10 +174,9 @@ fi
 
 
 #Delly primarily parallelizes on the sample level. Hence, OMP_NUM_THREADS should be always smaller or equal to the number of input samples.
-cores=$(get_cpu_count.py)
 
 if [ -z ${9} ]; then
-    num_threads=$((cores * 2))
+    num_threads=$(get_cpu_count.py)
 else
     num_threads=${9}
 fi
