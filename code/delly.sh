@@ -124,6 +124,8 @@ for line in $(cat ${comparesheet}); do
     control=$(echo $line | awk -F, '{print $1}')
     case=$(echo $line | awk -F, '{print $2}')
 
+    num_attached_bcfs=$(find -L ../results/dellyCNV/4filter -name "*.bcf" | wc -l)
+
     # A. Plot copy-number distribution for large number of samples (>>100)
     # First convert formats, then cd because Rscript will print to pwd
     if [ ${num_attached_bcfs} -gt 100 ]; then
@@ -138,6 +140,6 @@ for line in $(cat ${comparesheet}); do
     bcftools query -s ${case} -f "%CHROM\t%POS\t%INFO/END\t%ID\t[%RDCN]\n" -o ../results/dellyCNV/5plot/${case}_segmentation.bed ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf
     mkdir -p ../results/dellyCNV/5plot/${case}_plots_seg
     cd ../results/dellyCNV/5plot/${case}_plots_seg
-    R CMD BATCH "--args ../../1tumor/tumor_${case}_out.cov.gz ../${case}_segmentation.bed" /delly/R/rd.R 
+    R CMD BATCH "--args ../../1tumor/tumor_${case}_out.cov.gz ../${case}_segmentation.bed" /opt/delly/R/rd.R 
     cd ../../../../code
 done
