@@ -53,30 +53,6 @@ else
     #get BAM file(s) that have been trimmed, aligned to reference, sorted, read groups adjusted if necessary, and indexed
     echo "Downloading data from the S3 bucket at the provided URL."
     aws s3 sync --no-sign-request --only-show-errors ${s3_url} ${data_dir}
-
-    # Organize the controls and cases into separate folders
-    control_bams=$(while IFS= read -r line; do
-    if [[ ${line} =~ "control" ]]; then
-        control_name=$(echo ${line} | cut -d' ' -f1)
-        echo $(find -L ../data ${data_dir} -name ${control_name}*.bam)
-    fi
-    done < ${samplesheet})
-    echo ${control_bams}
-
-    mkdir -p ../scratch/data/controls
-    mv $(dirname ${control_bams}) ../scratch/data/controls
-
-    # find the tumors
-    tumor_bams=$(while IFS= read -r line; do
-        if [[ ${line} =~ "tumor" ]]; then
-            tumor_name=$(echo ${line} | cut -d' ' -f1)
-            echo $(find -L ../data ../scratch -name ${tumor_name}*.bam)
-        fi
-    done < ${samplesheet})
-    echo ${tumor_bams}
-
-    mkdir -p ../scratch/data/cases
-    mv $(dirname ${tumor_bams}) ../scratch/data/cases
 fi
 
 

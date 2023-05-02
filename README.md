@@ -41,10 +41,10 @@ Path to the genome reference
 - Path to fasta reference [Default: ../data/Reference]
 
 Path to bed exclude file
-- Bed file containing regions to ignore [Default: None]
+- Bed file containing regions to ignore [Default: Any .bed file in the /data directory]
 
 Path to blacklisted fasta file
-- Fasta sequences to ignore. [Default: None]
+- Fasta sequences to ignore. [Default: Any *blacklist.gz file in the /data directory]
 
 Type of structural variation
 - The type of Structural Variants to detect: DELetions, INSertions, DUPlications, INVersions, BreakeND, or ALL types. [Default ALL]
