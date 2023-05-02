@@ -203,60 +203,185 @@ export OMP_NUM_THREADS=${min}
 
 ## Auxilliary Parameters
 
+## SV discovery options in delly call
 if [ -z ${10} ]; then
-    map_quality=1
+    min_read_map_quality_discovery=
 else
-    map_quality=${10}
+    min_read_map_quality_discovery=--map_qual ${10}
 fi
 
 
-if [ -z ${11} ]; then 
-    qual_translocation=20
+if [ -z ${11} ]; then
+    min_split_read_dist=
 else
-    qual_translocation=${11}
+    min_split_read_dist=--minrefsep ${11}
 fi
 
 
 if [ -z ${12} ]; then
-    min_clip=25
+    max_split_read_dist=
 else
-    min_clip=${12}
+    max_split_read_dist=--maxreadsep ${12}
 fi
 
 
+## SV genotyping options in delly call
+
 if [ -z ${13} ]; then
-    min_clique_size=2
+    min_read_map_quality_genotyping=
 else
-    min_clique_size=${13}
+    min_read_map_quality_genotyping=--geno_qual ${13}
 fi
 
 
 if [ -z ${14} ]; then
-    min_split_read_dist=25
+    SV_reads_output=
 else
-    min_split_read_dist=${14}
+    SV_reads_output=--dump ${14}
 fi
 
 
+## merging options 
+
 if [ -z ${15} ]; then
-    max_split_read_dist=40
+    min_SV_quality=
 else
-    max_split_read_dist=${15}
+    min_SV_quality=--quality ${15}
 fi
 
 
 if [ -z ${16} ]; then
-    genotype_quality=5
+    min_coverage=
 else
-    genotype_quality=${16}
+    min_coverage=--coverage ${16}
 fi
 
 
-if [ -d ${17} ]; then
-    SV_reads_output=
+if [ -z ${17} ]; then
+    min_SV_size=
 else
-    SV_reads_output=-d ${17}
+    min_SV_size=--min_size ${17}
+fi
+
+
+if [ -z ${18} ]; then
+    max_SV_size=
+else
+    max_SV_size=--maxsize ${18}
+fi
+
+
+if [ ${19} == "no" ]; then
+    precise_only=
+else
+    precise_only=--precise
+fi
+
+
+if [ ${20} == "no" ]; then
+    pass_only=
+else
+    pass_only=--pass
 fi
 
 
 
+# delly filter options 
+
+if [ -z ${21} ]; then
+    min_genotyped_samples=
+else
+    min_genotyped_samples=--ratiogeno ${21}
+fi
+
+
+# delly CNV options
+
+if [ -z ${22} ]; then
+    min_mapping_quality_CNV=
+else
+    min_mapping_quality_CNV=--quality ${22}
+fi
+
+
+if [ -z ${23} ]; then
+    ploidy=
+else
+    ploidy=--ploidy ${23}
+fi
+
+
+if [ -z ${24} ]; then
+    min_CNV_size=
+    min_CNV_size2=
+else
+    min_CNV_size=--cnv-size ${24}
+    min_CNV_size2=--minsize ${24}
+fi
+
+
+# read depth window options
+if [ -z ${25} ]; then
+    window_size=
+else
+    window_size=--window-size ${25}
+fi
+
+
+if [ -z ${26} ]; then
+    window_offset=
+else
+    window_offset=--window-offset ${26}
+fi
+
+
+if [ -z ${27} ]; then
+    bed_intervals=
+else
+    bed_intervals=--bed-intervals ${27}
+fi
+
+
+if [ -z ${28} ]; then
+    min_callable_window_fraction=
+else
+    min_callable_window_fraction=--fraction-window ${28}
+fi
+
+
+if [ ${29} == "no" ]; then
+    mappable_bases_in_window=
+else
+    mappable_bases_in_window=--adaptive-windowing
+fi
+
+
+# GC fragment normalization options
+if [ -z ${30} ]; then
+    scan_window_size=
+else
+    scan_window_size=--scan-windowing ${30}
+fi
+
+
+if [ -z ${31} ]; then
+    scanning_regions_in_BED=
+else
+    scanning_regions_in_BED=--scan-regions ${31}
+fi
+
+
+if [ ${32} == "no" ]; then
+    scan_window=
+else
+    scan_window=--no-window-selection
+fi
+
+
+# Delly classify options
+
+if [ -z ${33} ]; then
+    max_CNV_size=
+else
+    max_CNV_size=--maxsize ${33}
+fi

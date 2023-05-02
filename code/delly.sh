@@ -25,7 +25,7 @@ for line in $(cat ${comparesheet}); do
     control_file=$(find -L ${data_dir} -name "${control}"*.bam)
     case_file=$(find -L ${data_dir} -name "${case}"*.bam)
     
-    /delly/src/delly call -g ${reference} -x ${SVbed} -q ${map_quality} -r ${qual_translocation} -c ${min_clip} -z ${min_clique_size} -m ${min_split_read_dist} -n ${max_split_read_dist} -o ../results/dellySV/1calls/sample_pair_${case}_${control}.bcf ${case_file} ${control_file}   
+    /delly/src/delly call -g ${reference} -x ${SVbed} ${min_read_map_quality_discovery} ${min_split_read_dist} ${max_split_read_dist} -o ../results/dellySV/1calls/sample_pair_${case}_${control}.bcf ${case_file} ${control_file}   
 done
 
 
@@ -34,39 +34,41 @@ done
 for pairedbcfs in ../results/dellySV/1calls/sample_pair*.bcf
 do
     case=$(basename ${pairedbcfs} | sed 's/_[^_]*$//g' | uniq)
-    /delly/src/delly filter -f somatic -o ../results/dellySV/2prefilter/${case}_prefilter.bcf -s ${samplesheet} ${pairedbcfs}
+    /delly/src/delly filter -f somatic ${min_SV_quality} ${min_SV_size} ${max_SV_size} ${min_genotyped_samples} ${pass_only} ${min_coverage} -o ../results/dellySV/2prefilter/${case}_prefilter.bcf -s ${samplesheet} ${pairedbcfs}
 done 
 
 
 
 # 3. Genotype pre-filtered somatic sites across a larger panel of control samples to efficiently filter false postives and germline SVs. (1 tumor and lots of controls)
 
-# # Re-specify these variables
-# control_bams=$(while IFS= read -r line; do
-#     if [[ ${line} =~ "control" ]]; then
-#         control_name=$(echo ${line} | cut -d' ' -f1)
-#         echo $(find -L /data /results/data/controls -name ${control_name}*.bam)
-#     fi
-# done < ${samplesheet})
-# echo $controls
+# Re-specify these variables
+control_bams=$(while IFS= read -r line; do
+    if [[ ${line} =~ "control" ]]; then
+        control_name=$(echo ${line} | cut -d' ' -f1)
+        echo $(find -L ../data ../results/data/controls -name ${control_name}*.bam)
+    fi
+done < ${samplesheet})
+echo $controls
 
 
-# # find the tumors
-# tumors=$(while IFS= read -r line; do
-#     if [[ ${line} =~ "tumor" ]]; then
-#         echo ${line} | cut -d' ' -f1
-#     fi
-# done < ${samplesheet})
-# echo ${tumors}
+# find the tumors
+tumors=$(while IFS= read -r line; do
+    if [[ ${line} =~ "tumor" ]]; then
+        echo ${line} | cut -d' ' -f1
+    fi
+done < ${samplesheet})
+echo ${tumors}
+
 
 for tumorsamp in ${tumors}; do
     #tumorsamp=$(basename ${file} .bam)
     mkdir -p ../results/dellySV/3genotypes/${tumorsamp}
     tumor_bcf=$(find -L ../results/ -name "sample_pair_${tumorsamp}_*prefilter.bcf")
-    /delly/src/delly call -g ${reference} -v ${tumor_bcf} -x ${SVbed} -q ${map_quality} -r ${qual_translocation} -c ${min_clip} -z ${min_clique_size} -m ${min_split_read_dist} -n ${max_split_read_dist} -o ../results/dellySV/3genotypes/${tumorsamp}/${tumorsamp}_geno.bcf $(find -L /data /results -name ${tumorsamp}*.bam) ${control_bams} #RG
+    /delly/src/delly call -g ${reference} -v ${tumor_bcf} -x ${SVbed} ${min_read_map_quality_discovery} ${min_split_read_dist} ${max_split_read_dist} -o ../results/dellySV/3genotypes/${tumorsamp}/${tumorsamp}_geno.bcf $(find -L ../data ../results -name ${tumorsamp}*.bam) ${control_bams} #RG
 
     # 4. Post-filter for somatic SVs using all control samples.
-    /delly/src/delly filter -f somatic -o ../results/dellySV/4filter/${tumorsamp}/${tumorsamp}_somatic.bcf -s ${samplesheet} ../results/dellySV/3genotypes/${tumorsamp}/${tumorsamp}_geno.bcf
+        mkdir -p ../results/dellySV/4filter/${tumorsamp}
+    /delly/src/delly filter -f somatic ${min_SV_quality} ${min_SV_size} ${max_SV_size} ${min_genotyped_samples} ${pass_only} ${min_coverage} -o ../results/dellySV/4filter/${tumorsamp}/${tumorsamp}_somatic.bcf -s ${samplesheet} ../results/dellySV/3genotypes/${tumorsamp}/${tumorsamp}_geno.bcf
 done
 
 
@@ -78,7 +80,7 @@ done
 # 1. Somatic copy-number alterations detection (-u is required). Depending on the coverage, tumor purity and heterogeneity you can adapt parameters -z, -t and -x which control the sensitivity of SCNA detection.
 
 for tumorsamp in ${tumors}; do
-    /delly/src/delly cnv -u -o ../results/dellyCNV/1tumor/tumor_${tumorsamp}.bcf -c ../results/dellyCNV/1tumor/tumor_${tumorsamp}_out.cov.gz -g ${reference} -m ${CNVmap} $(find -L ../data ../results -name ${tumorsamp}*.bam) #RG
+    /delly/src/delly cnv -u ${min_mapping_quality_CNV} ${ploidy} ${min_CNV_size} ${window_size} ${window_offset} ${bed_intervals} ${min_callable_window_fraction} ${mappable_bases_in_window} ${scan_window_size} ${scanning_regions_in_BED} ${scan_window} -o ../results/dellyCNV/1tumor/tumor_${tumorsamp}.bcf -c ../results/dellyCNV/1tumor/tumor_${tumorsamp}_out.cov.gz -g ${reference} -m ${CNVmap} $(find -L ../data ../results -name ${tumorsamp}*.bam) #RG
 done 
 
 
@@ -90,7 +92,7 @@ for line in $(cat ${comparesheet}); do
 
     control_file=$(find -L ${data_dir} -name "${control}"*.bam)
     
-    /delly/src/delly cnv -u -v ../results/dellyCNV/1tumor/tumor_${case}.bcf -o ../results/dellyCNV/2control/control_${control}.bcf -g ${reference} -m ${CNVmap} ${control_file}
+    /delly/src/delly cnv -u -v ../results/dellyCNV/1tumor/tumor_${case}.bcf ${min_mapping_quality_CNV} ${ploidy} ${min_CNV_size} ${window_size} ${window_offset} ${bed_intervals} ${min_callable_window_fraction} ${mappable_bases_in_window} ${scan_window_size} ${scanning_regions_in_BED} ${scan_window} -o ../results/dellyCNV/2control/control_${control}.bcf -g ${reference} -m ${CNVmap} ${control_file}
 done
 
 
@@ -114,7 +116,7 @@ for line in $(cat ${comparesheet}); do
     control=$(echo $line | awk -F, '{print $1}')
     case=$(echo $line | awk -F, '{print $2}')
 
-    /delly/src/delly classify -f somatic -o ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf -s ${samplesheet} ../results/dellyCNV/3merge/${case}_${control}.bcf
+    /delly/src/delly classify -f somatic ${min_CNV_size2} ${max_CNV_size} ${pass_only} ${ploidy} -o ../results/dellyCNV/4filter/somatic_${case}_${control}.bcf -s ${samplesheet} ../results/dellyCNV/3merge/${case}_${control}.bcf
 done
 
 

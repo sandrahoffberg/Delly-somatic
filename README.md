@@ -10,6 +10,8 @@ This capsule does Structural Variant calling based on paired-end and split-reads
 
 For more information, see the [Delly Github](https://github.com/dellytools/delly) page. 
 
+Delly includes many tunable parameters (e.g., for discovering variants with minimum quality, within specific window sizes, etc). This capsule leaves most parameters as default.
+
 ## Input 
 - BAM file that has been trimmed, aligned to reference, sorted, duplicate marked, read groups adjusted if necessary, indexed.  This capsule downloads data from an S3 bucket if a URL is provided in the App Panel. If no URL is provided, it will search for bam files in the **/data** directory.  It can use sample data from both locations in the same run. 
 - In the **/data** directory, a genome in fasta format (```.fa``` ending) with an index created in Samtools that ends in ```.fa.fai```   is required to identify split-reads
@@ -21,7 +23,6 @@ For more information, see the [Delly Github](https://github.com/dellytools/delly
 
 
 ## Outputs
-- Optional: the bam files, if downloaded from S3
 - A folder for SV calling entitled ```/results/dellySV/``` containing
     - A subfolder ```/1calls``` containing SV calls for each case/control pair, as specified in the comparesheet, saved as a ```.bcf``` with an index
     - A subfolder ```/2prefilter``` containing filtered SV calls in a ```.bcf``` format with an index
@@ -50,13 +51,30 @@ For more information, see the [Delly Github](https://github.com/dellytools/delly
 
 ### Auxilliary Parameters
 
-- Minimum paired end mapping quality [Default: 1]
-- Minimum paired end quality for translocations [Default: 20]
-- Minimum min. clipped length for a soft-clipped read [Default: 25]
-- Minimum distance on a reference for how far apart split-reads need to be [Default: 25]
-- Maximum distance on a reference for how far apart split-reads can be [Default: 40]
-- Minimum mapping quality for genotyping [Default: 5]
-- Optional: gzipped output file for SV-reads
+- Minimum MAPQ quality for paired end mapping during SV discovery.  This is an integer value ranging from 0 to 255 and the optimal value can depend on the aligner used.  When in doubt, the user can plot the MAPQ distribution in a BAM file [Default: 1]
+- Minimum distance on a reference for how far apart split-reads need to be [Default: 25 bp]
+- Maximum distance on a reference for how far apart split-reads can be [Default: 40 bp]
+- Minimum MAPQ quality for paired end mapping during SV genotyping. This is an integer value ranging from 0 to 255 and the optimal value can depend on the aligner used.  When in doubt, the user can plot the MAPQ distribution in a BAM file [Default: 5]
+- gzipped output file for SV-reads
+- Minimum SV site quality for merging [Default: 300]
+- Minimum coverage for merging [Default: 10]
+- Minimum SV length [Default: 0 bp]
+- Maximum SV length [Default: 1,000,000 bp for merging; 500,000,000 bp for filtering]
+- Only retain SVs with Precise tag during merging? This should only be used with whole exon data, not whole genome data [Default: no]
+- Only retain SVs with Pass tag during merging? [Default: no for SV discovery; yes for SV genotyping]
+- Minimum fraction of genotyped samples for filtering [Default: 0.75]
+- Minimum mapping quality for CNVs [Default: 10]
+- Ploidy [Default: 2]
+- Minimum CNV size [Default: 1000]
+- Window size for read-depth windows [Default: 10,000]
+- Window offset for read-depth windows [Default: 10,000]
+- Input BED file with the windows for read-depth windows
+- Minimum fraction of the window that is callable for read-depth windows [Default: 0.25]
+- Use mappable bases for window size? [Default: no]
+- Scanning window size for GC fragment normalization [Default: 10,000]
+- Scanning regions in BED format for GC fragment normalization
+- Scan window selection for GC fragment normalization? [Default: no]
+- Maximum CNV size [Default: 500,000,000]
 
 
 ## Citation
