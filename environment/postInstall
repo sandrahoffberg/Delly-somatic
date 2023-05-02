@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
 set -e
 
+mamba install -y --channel=conda-forge --channel=bioconda \
+        bcftools \
+        htslib \
+        r-ggplot2 \
+        r-gtable \
+        r-reshape2 \
+        r-scales \
+    && mamba clean -ya
+
+
+mkdir -p /opt
+cd /opt
+
 # get latest version of Delly from github
 git clone --recursive https://github.com/dellytools/delly.git
-
 cd delly/
 
 # Build with OpenMP API
 make PARALLEL=1 src/delly
-
+make install
+ln -s /opt/delly/bin/delly /usr/local/bin
 
 # install code ocean aux tools
-mkdir -p /opt
-cd /opt
+
 git clone https://github.com/codeocean/co_aux_tools.git
 cd co_aux_tools/
 git checkout 920f3f3a7ffa1cfd25e31679c109853fb90e75e5

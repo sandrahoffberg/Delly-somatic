@@ -1,4 +1,4 @@
-# hash:sha256:e9e12ce1a55bc0e4fe5865fe5c1f61c7ae614301cf2f15dc9df1cfcb633dd55f
+# hash:sha256:51799e397be28046f9e99c49605f7109c35ce914607305d325a4dae6e0263597
 FROM registry.apps.codeocean.com/codeocean/mambaforge3:22.11.1-4-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -35,14 +35,9 @@ RUN apt-get update \
         zlib1g-dev=1:1.2.11.dfsg-2ubuntu9.2 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN conda install -y --channel=conda-forge --channel=bioconda \
-        bcftools==1.8 \
-        htslib==1.9 \
-        r-ggplot2==3.4.2 \
-        r-gtable==0.3.3 \
-        r-reshape2==1.4.4 \
-        r-scales==1.2.1 \
-    && conda clean -ya
+RUN echo 'options(repos = c(CRAN = "https://cloud.r-project.org/"), download.file.method = "libcurl")' >> $(Rscript -e 'cat(R.home())')/etc/Rprofile.site \
+    && echo 'options(Ncpus = parallel::detectCores())' >> $(Rscript -e 'cat(R.home())')/etc/Rprofile.site \
+    && Rscript -e 'options(warn=2); install.packages("remotes")'
 
 COPY postInstall /
 RUN /postInstall
